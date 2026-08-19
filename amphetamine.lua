@@ -41,19 +41,24 @@ function setCaffeineDisplay(state)
     end
 end
 
+local function setCaffeineState(state)
+    hs.caffeinate.set("system", state)
+    hs.caffeinate.set("displayIdle", state)
+    setCaffeineDisplay(state)
+end
+
 function caffeineClicked()
-    local newState = not hs.caffeinate.get("system")
-    hs.caffeinate.set("system", newState)
-    hs.caffeinate.set("displayIdle", newState)
-    setCaffeineDisplay(newState)
+    setCaffeineState(not hs.caffeinate.get("system"))
+end
+
+-- Keep the external display awake whenever we're on the power adapter, so
+-- closing the lid enters clamshell mode instead of a full "Clamshell Sleep".
+local function syncWithPowerSource()
+    setCaffeineState(hs.battery.powerSource() == "AC Power")
 end
 
 if caffeine then
     caffeine:setClickCallback(caffeineClicked)
-    setCaffeineDisplay(hs.caffeinate.get("system"))
-    -- Start in OFF state - respect system sleep/display defaults
-    -- Click the menubar icon to activate (keep awake)
-    hs.caffeinate.set("system", false)
-    hs.caffeinate.set("displayIdle", false)
-    setCaffeineDisplay(false)
+    powerSourceWatcher = hs.battery.watcher.new(syncWithPowerSource):start()
+    syncWithPowerSource()
 end

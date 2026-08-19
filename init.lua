@@ -4,6 +4,9 @@ local LOGLEVEL = 'info'
 
 local hyper = {"shift", "ctrl", "alt", "cmd"}
 
+-- Enable the `hs` command-line tool (/usr/local/bin/hs)
+require("hs.ipc")
+
 local secrets = require('secrets')
 
 hs.loadSpoon("MiroWindowsManager")
