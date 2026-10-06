@@ -59,7 +59,7 @@ cfg.browser = {
   },
 }
 
-cfg.browser.defaultApp = 'company.thebrowser.Browser'
+cfg.browser.defaultApp = 'com.apple.Safaris'
 
 ------------------
 --  cheatsheet  --

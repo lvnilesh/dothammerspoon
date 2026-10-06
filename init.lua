@@ -7,17 +7,23 @@ local hyper = {"shift", "ctrl", "alt", "cmd"}
 -- Enable the `hs` command-line tool (/usr/local/bin/hs)
 require("hs.ipc")
 
-local secrets = require('secrets')
-
 hs.loadSpoon("MiroWindowsManager")
-hs.loadSpoon("OpenclawHealth")
 
--- Start Openclaw Main Gateway health monitoring (Tailscale TLS direct)
-spoon.OpenclawHealth.checkInterval = 30  -- check every 30 seconds
-spoon.OpenclawHealth.gatewayUrl = secrets.openclaw_gateway_url
-spoon.OpenclawHealth.dashboardUrl = secrets.openclaw_dashboard_url
-spoon.OpenclawHealth.authToken = secrets.openclaw_auth_token
-spoon.OpenclawHealth:start()
+local secretsLoaded, secrets = pcall(require, 'secrets')
+if secretsLoaded
+  and type(secrets) == 'table'
+  and type(secrets.openclaw_gateway_url) == 'string'
+  and type(secrets.openclaw_dashboard_url) == 'string'
+  and type(secrets.openclaw_auth_token) == 'string' then
+  hs.loadSpoon("OpenclawHealth")
+  spoon.OpenclawHealth.checkInterval = 30
+  spoon.OpenclawHealth.gatewayUrl = secrets.openclaw_gateway_url
+  spoon.OpenclawHealth.dashboardUrl = secrets.openclaw_dashboard_url
+  spoon.OpenclawHealth.authToken = secrets.openclaw_auth_token
+  spoon.OpenclawHealth:start()
+else
+  print("OpenclawHealth disabled: copy secrets.lua.example to secrets.lua and fill in its values")
+end
 
 hs.window.animationDuration = 0
 
@@ -145,3 +151,7 @@ bindings.bind()
 hs.window.animationDuration = 0
 
 hs.alert.show('Hammerspoon Config Loaded', 1)
+
+-- stretch + KB reminders (30 min jitter, 8:00-23:59)
+local stretch = require "stretch"
+stretch.start()

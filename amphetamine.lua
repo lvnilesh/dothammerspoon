@@ -51,14 +51,7 @@ function caffeineClicked()
     setCaffeineState(not hs.caffeinate.get("system"))
 end
 
--- Keep the external display awake whenever we're on the power adapter, so
--- closing the lid enters clamshell mode instead of a full "Clamshell Sleep".
-local function syncWithPowerSource()
-    setCaffeineState(hs.battery.powerSource() == "AC Power")
-end
-
 if caffeine then
     caffeine:setClickCallback(caffeineClicked)
-    powerSourceWatcher = hs.battery.watcher.new(syncWithPowerSource):start()
-    syncWithPowerSource()
+    setCaffeineState(false)
 end
