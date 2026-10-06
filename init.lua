@@ -152,6 +152,8 @@ hs.window.animationDuration = 0
 
 hs.alert.show('Hammerspoon Config Loaded', 1)
 
--- stretch + KB reminders (30 min jitter, 8:00-23:59)
+-- stretch + KB reminders: RECEIVER ONLY — the schedule and both delivery
+-- legs (ntfy push + this banner) are driven by the Hermes container cron job,
+-- because m1 sleeps and an in-app timer would silently drop fires.
+-- stretch.start() is intentionally NOT called (this module has no timers).
 local stretch = require "stretch"
-stretch.start()
